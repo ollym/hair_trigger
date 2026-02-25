@@ -249,16 +249,16 @@ module HairTrigger
     def to_ruby(indent = '', always_generated = true)
       prepare!
       if options[:drop]
-        str = "#{indent}drop_trigger(#{prepared_name.inspect}, #{options[:table].inspect}"
+        str = +"#{indent}drop_trigger(#{prepared_name.inspect}, #{options[:table].inspect}"
         str << ", :generated => true" if always_generated || options[:generated]
         str << ")"
       else
         if @trigger_group
-          str = "t." + chained_calls_to_ruby + " do\n"
+          str = +"t." + chained_calls_to_ruby + " do\n"
           str << actions_to_ruby("#{indent}  ") + "\n"
           str << "#{indent}end"
         else
-          str = "#{indent}create_trigger(#{prepared_name.inspect}"
+          str = +"#{indent}create_trigger(#{prepared_name.inspect}"
           str << ", :generated => true" if always_generated || options[:generated]
           str << ", :compatibility => #{@compatibility}"
           str << ").\n#{indent}    " + chained_calls_to_ruby(".\n#{indent}    ")
@@ -468,7 +468,7 @@ END;
       raise GenerationError, "of can only be used in conjunction with nowrap on postgres 9.1 and greater" if options[:nowrap] && options[:of] && db_version < 90100
       raise GenerationError, "referencing can only be used on postgres 10.0 and greater" if options[:referencing] && db_version < 100000
 
-      sql = ''
+      sql = +""
 
       if options[:nowrap]
         trigger_action = raw_actions
@@ -513,7 +513,7 @@ FOR EACH #{options[:for_each]}#{prepared_where && db_version >= 90000 ? " WHEN (
 
     def generate_trigger_mysql
       security = options[:security] if options[:security] && options[:security] != :definer
-      sql = <<-SQL
+      sql = +<<-SQL
 CREATE #{security ? "DEFINER = #{security} " : ""}TRIGGER #{prepared_name} #{options[:timing]} #{options[:events].first} ON `#{options[:table]}`
 FOR EACH #{options[:for_each]}
 BEGIN
@@ -542,6 +542,7 @@ BEGIN
     end
 
     def normalize(text, level = 0)
+      text = text.dup
       indent = level * self.class.tab_spacing
       text.gsub!(/\t/, ' ' * self.class.tab_spacing)
       existing = text.split(/\n/).map{ |line| line.sub(/[^ ].*/, '').size }.min
@@ -571,7 +572,7 @@ BEGIN
 
       def compatibility
         @compatibility ||= begin
-          if HairTrigger::VERSION <= "0.1.3"
+          if Gem::Version.new(HairTrigger::VERSION) <= Gem::Version.new("0.1.3")
             0 # initial releases
           else
             1 # postgres RETURN bugfix

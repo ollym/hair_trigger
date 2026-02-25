@@ -42,7 +42,7 @@ FOR EACH ROW
             SQL
           end
         when *HairTrigger.hair_trigger_config.postgresql_adapters
-          function_conditions = "(SELECT typname FROM pg_type WHERE oid = prorettype) = 'trigger'"
+          function_conditions = +"(SELECT typname FROM pg_type WHERE oid = prorettype) = 'trigger'"
           function_conditions << <<-SQL unless options[:simple_check]
             AND oid IN (
               SELECT tgfoid

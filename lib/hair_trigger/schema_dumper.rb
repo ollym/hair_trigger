@@ -87,11 +87,11 @@ module HairTrigger
         @connection.execute(definition.sub(name, test_name))
         # now add them back
         if type == :function
-          test_name << '()'
-          name << '()'
+          test_name = "#{test_name}()"
+          name = "#{name}()"
         end
         definition = @connection.triggers(:only => [test_name], :simple_check => true).values.first
-        definition.sub!(test_name, name)
+        definition = definition.sub(test_name, name)
         raise ActiveRecord::Rollback
       end
       definition

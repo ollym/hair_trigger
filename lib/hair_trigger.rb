@@ -186,11 +186,11 @@ end
 
     def infer_migration_name(migration_names, create_triggers, drop_triggers)
       if create_triggers.size > 0
-        migration_base_name = "create trigger#{create_triggers.size > 1 ? 's' : ''} "
+        migration_base_name = +"create trigger#{create_triggers.size > 1 ? 's' : ''} "
         name_parts = create_triggers.map { |t| [t.options[:table], t.options[:events].join(" ")].join(" ") }.uniq
         part_limit = 4
       else
-        migration_base_name = "drop trigger#{drop_triggers.size > 1 ? 's' : ''} "
+        migration_base_name = +"drop trigger#{drop_triggers.size > 1 ? 's' : ''} "
         name_parts = drop_triggers.map { |t| t.options[:table] }
         part_limit = 6
       end
